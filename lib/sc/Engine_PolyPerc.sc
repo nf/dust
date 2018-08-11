@@ -6,6 +6,7 @@ Engine_PolyPerc : CroneEngine {
     var pw=0.5;
     var cutoff=1000;
     var gain=2;
+    var q=0.5;
 
 	*new { arg context, doneCallback;
 		^super.new(context, doneCallback);
@@ -13,9 +14,9 @@ Engine_PolyPerc : CroneEngine {
 
 	alloc {
         SynthDef("PolyPerc", {
-			arg out, freq = 440, pw=pw, amp=amp, cutoff=cutoff, gain=gain, release=release;
+			arg out, freq = 440, pw=pw, amp=amp, cutoff=cutoff, gain=gain, release=release, q=q;
 			var snd = Pulse.ar(freq, pw);
-			var filt = MoogFF.ar(snd,cutoff,gain);
+			var filt = RLPF.ar(snd, cutoff, q);
 			var env = Env.perc(level: amp, releaseTime: release).kr(2);
 			//			out.poll;
 			Out.ar(out, (filt*env).dup);
@@ -23,7 +24,7 @@ Engine_PolyPerc : CroneEngine {
 
 		this.addCommand("hz", "f", { arg msg;
 			var val = msg[1];
-            Synth("PolyPerc", [\out, context.out_b, \freq,val,\pw,pw,\amp,amp,\cutoff,cutoff,\gain,gain,\release,release], target:context.xg);
+            Synth("PolyPerc", [\out, context.out_b, \freq,val,\pw,pw,\amp,amp,\cutoff,cutoff,\gain,gain,\release,release,\q,q], target:context.xg);
 		});
 
 		this.addCommand("amp", "f", { arg msg;
@@ -41,6 +42,9 @@ Engine_PolyPerc : CroneEngine {
 		});
 		this.addCommand("gain", "f", { arg msg;
 			gain = msg[1];
+		});
+		this.addCommand("q", "f", { arg msg;
+			q = msg[1];
 		});
 	}
 }

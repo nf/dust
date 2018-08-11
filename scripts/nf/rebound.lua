@@ -79,6 +79,11 @@ function init()
   params:set_action("gain",
   function(x) engine.gain(x) end) 
 
+  cs.Q = cs.new(0,0.5,'lin',0.01,0.2,'')
+  params:add_control("q",cs.GAIN)
+  params:set_action("q",
+  function(x) engine.q(x) end) 
+
   params:bang()
 end
 
